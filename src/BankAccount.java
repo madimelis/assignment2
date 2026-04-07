@@ -21,7 +21,8 @@ public class BankAccount {
 
         do {
             System.out.println("\n1. Add a new account \n2. Display all accounts " +
-                    "\n3. Search account by username \n4. Exit");
+                    "\n3. Search account by username  \n4. Deposit money \n5. Withdraw money" +
+                    "\n6. Exit");
             System.out.print("Enter your choice: ");
             choice = sc.nextInt();
             sc.nextLine();
@@ -50,7 +51,7 @@ public class BankAccount {
                     break;
 
                 case 3:
-                    System.out.print("Enter username to search: ");
+                    System.out.print("Enter username: ");
                     String search = sc.nextLine();
                     boolean found = false;
                     for (BankAccount acc : accounts) {
@@ -62,7 +63,44 @@ public class BankAccount {
                     }
                     if (!found) System.out.println("Account not found.");
                     break;
+
+                    case 4:
+                        System.out.print("Enter username: ");
+                        String search1 = sc.nextLine();
+                        boolean found1 = false;
+                        for (BankAccount acc : accounts) {
+                            if (acc.username.equalsIgnoreCase(search1)) {
+                                System.out.print("Deposit: ");
+                                double deposit = sc.nextDouble();
+                                acc.balance += deposit;
+                                System.out.println("New balance: " + acc.balance);
+                                found1 = true;
+                                break;
+                            }
+                        }
+                        if (!found1) System.out.println("Account not found.");
+                        break;
+
+                case 5:
+                    System.out.print("Enter username: ");
+                    String search2 = sc.nextLine();
+                    boolean found2 = false;
+                    for (BankAccount acc : accounts) {
+                        if (acc.username.equalsIgnoreCase(search2)) {
+                            System.out.print("Withdraw: ");
+                            double withdraw = sc.nextDouble();
+                            if(withdraw <= acc.balance) {
+                                acc.balance -= withdraw;
+                                System.out.println("New balance: " + acc.balance);
+                            }
+                            else System.out.println("Withdraw failed!");
+                            found2 = true;
+                            break;
+                        }
+                    }
+                    if (!found2) System.out.println("Account not found.");
+                    break;
             }
-        } while(choice != 4);
+        } while(choice != 6);
     }
 }
