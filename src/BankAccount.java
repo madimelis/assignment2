@@ -64,22 +64,22 @@ public class BankAccount {
                     if (!found) System.out.println("Account not found.");
                     break;
 
-                    case 4:
-                        System.out.print("Enter username: ");
-                        String search1 = sc.nextLine();
-                        boolean found1 = false;
-                        for (BankAccount acc : accounts) {
-                            if (acc.username.equalsIgnoreCase(search1)) {
-                                System.out.print("Deposit: ");
-                                double deposit = sc.nextDouble();
-                                acc.balance += deposit;
-                                System.out.println("New balance: " + acc.balance);
-                                found1 = true;
-                                break;
-                            }
+                case 4:
+                    System.out.print("Enter username: ");
+                    String search1 = sc.nextLine();
+                    boolean found1 = false;
+                    for (BankAccount acc : accounts) {
+                        if (acc.username.equalsIgnoreCase(search1)) {
+                            System.out.print("Deposit: ");
+                            double deposit = sc.nextDouble();
+                            acc.balance += deposit;
+                            System.out.println("New balance: " + acc.balance);
+                            found1 = true;
+                            break;
                         }
-                        if (!found1) System.out.println("Account not found.");
-                        break;
+                    }
+                    if (!found1) System.out.println("Account not found.");
+                    break;
 
                 case 5:
                     System.out.print("Enter username: ");
