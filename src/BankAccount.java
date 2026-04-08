@@ -38,6 +38,8 @@ public class BankAccount {
         int choice;
         BillNode queueFront = null;
         BillNode queueRear = null;
+        BankAccount reqFront = null;
+        BankAccount reqRear = null;
 
         do {
             System.out.println("\n1. Add a new account \n2. Display all accounts" +
@@ -45,7 +47,8 @@ public class BankAccount {
                     "\n5. Withdraw money \n6. Show last transaction"  +
                     " \n7. Undo last transaction \n8. Add bill" +
                     "\n9. Process bill \n10. Display queue" +
-                    "\n11. Exit");
+                    "\n11. Process request" +
+                    "\n12. Exit");
             System.out.print("Enter your choice: ");
             choice = sc.nextInt();
             sc.nextLine();
@@ -59,10 +62,13 @@ public class BankAccount {
                     String username = sc.nextLine();
                     System.out.print("Enter initial balance: ");
                     double balance = sc.nextDouble();
-                    BankAccount newAcc = new BankAccount(accountNumber, username, balance);
-                    if (head != null) newAcc.next = head;
-                    head = newAcc;
-                    System.out.println("Account added.");
+                    BankAccount newReq = new BankAccount(accountNumber, username, balance);
+                    if (reqRear == null) reqFront = reqRear = newReq;
+                    else {
+                        reqRear.next = newReq;
+                        reqRear = newReq;
+                    }
+                    System.out.println("Request sent to admin.");
                     break;
 
                 case 2:
@@ -97,7 +103,7 @@ public class BankAccount {
                     System.out.print("Enter username: ");
                     BankAccount wAcc = findAccount(head, sc.nextLine());
                     if (wAcc != null) {
-                        System.out.println("Withdraw: ");
+                        System.out.print("Withdraw: ");
                         double withdraw = sc.nextDouble();
                         if (withdraw <= wAcc.balance) {
                             wAcc.balance -= withdraw;
@@ -151,7 +157,19 @@ public class BankAccount {
                         tempB = tempB.next;
                     }
                     break;
+
+                case 11:
+                    if (reqFront != null) {
+                        BankAccount approved = reqFront;
+                        reqFront = reqFront.next;
+                        if (reqFront == null) reqRear = null;
+
+                        approved.next = head;
+                        head = approved;
+                        System.out.println("Account approved: " + approved.username);
+                    } else System.out.println("No pending requests.");
+                    break;
             }
-        } while(choice != 11);
+        } while(choice != 12);
     }
 }
