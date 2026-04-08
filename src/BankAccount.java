@@ -14,15 +14,27 @@ public class BankAccount {
     @Override
     public String toString() {return accountNumber + ". " + username + " - Balance: "  + balance;}
 
+    public static BankAccount findAccount(LinkedList<BankAccount> accounts, String name) {
+        for (BankAccount acc : accounts) {
+            if (acc.username.equalsIgnoreCase(name)) return acc;
+        }
+        System.out.println("Account not found.");
+        return null;
+    }
+
     public static void  main(String[] args) {
         LinkedList<BankAccount> accounts = new LinkedList<>();
+        Stack<String> transactionHistory = new Stack<>();
         Scanner sc = new Scanner(System.in);
         int choice;
+
+
 
         do {
             System.out.println("\n1. Add a new account \n2. Display all accounts " +
                     "\n3. Search account by username  \n4. Deposit money \n5. Withdraw money" +
-                    "\n6. Exit");
+                    "\n6. Show last transaction \n7. Undo last transaction" +
+                    "\n8. Exit");
             System.out.print("Enter your choice: ");
             choice = sc.nextInt();
             sc.nextLine();
@@ -52,55 +64,51 @@ public class BankAccount {
 
                 case 3:
                     System.out.print("Enter username: ");
-                    String search = sc.nextLine();
-                    boolean found = false;
-                    for (BankAccount acc : accounts) {
-                        if (acc.username.equalsIgnoreCase(search)) {
-                            System.out.println(acc);
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) System.out.println("Account not found.");
+                    BankAccount foundAcc = findAccount(accounts, sc.nextLine());
+                    if (foundAcc != null) System.out.println(foundAcc);
                     break;
 
                 case 4:
                     System.out.print("Enter username: ");
-                    String search1 = sc.nextLine();
-                    boolean found1 = false;
-                    for (BankAccount acc : accounts) {
-                        if (acc.username.equalsIgnoreCase(search1)) {
-                            System.out.print("Deposit: ");
-                            double deposit = sc.nextDouble();
-                            acc.balance += deposit;
-                            System.out.println("New balance: " + acc.balance);
-                            found1 = true;
-                            break;
-                        }
+                    BankAccount depAcc = findAccount(accounts, sc.nextLine());
+                    if (depAcc != null) {
+                        System.out.print("Deposit: ");
+                        double deposit = sc.nextDouble();
+                        depAcc.balance += deposit;
+                        transactionHistory.push("Deposit " + deposit + " to " + depAcc.username);
+                        System.out.println("New balance: " + depAcc.balance);
                     }
-                    if (!found1) System.out.println("Account not found.");
                     break;
 
                 case 5:
                     System.out.print("Enter username: ");
-                    String search2 = sc.nextLine();
-                    boolean found2 = false;
-                    for (BankAccount acc : accounts) {
-                        if (acc.username.equalsIgnoreCase(search2)) {
-                            System.out.print("Withdraw: ");
-                            double withdraw = sc.nextDouble();
-                            if(withdraw <= acc.balance) {
-                                acc.balance -= withdraw;
-                                System.out.println("New balance: " + acc.balance);
-                            }
-                            else System.out.println("Withdraw failed!");
-                            found2 = true;
-                            break;
+                    BankAccount wAcc = findAccount(accounts, sc.nextLine());
+                    if (wAcc != null) {
+                        System.out.print("Withdraw: ");
+                        double withdraw = sc.nextDouble();
+                        if (withdraw <= wAcc.balance) {
+                            wAcc.balance -= withdraw;
+                            transactionHistory.push("Withdraw " + withdraw + " from " + wAcc.username);
+                            System.out.println("New balance: " + wAcc.balance);
                         }
+                        else System.out.println("Withdraw failed.");
                     }
-                    if (!found2) System.out.println("Account not found.");
+                    break;
+
+                case 6:
+                    if (!transactionHistory.isEmpty()) System.out.println("Last transaction: " + transactionHistory.peek());
+                    else System.out.println("History is empty.");
+                    break;
+
+                case 7:
+                    if (!transactionHistory.isEmpty()) {
+                        String removed = transactionHistory.pop();
+                        System.out.println("Undo -> " + removed + " removed from history.");
+                    } else {
+                        System.out.println("Nothing to undo.");
+                    }
                     break;
             }
-        } while(choice != 6);
+        } while(choice != 8);
     }
 }
