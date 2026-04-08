@@ -32,10 +32,10 @@ public class BankAccount {
 
     public static void  main(String[] args) {
         BankAccount head = null;
-        String[] history = new String[100];
+        String[] stackHistory = new String[100];
         int top = -1;
         Scanner sc = new Scanner(System.in);
-        int choice;
+        int mainChoice;
         BillNode queueFront = null;
         BillNode queueRear = null;
         BankAccount reqFront = null;
@@ -50,136 +50,121 @@ public class BankAccount {
         for (int i = 0; i < predefinedAccounts.length; i++) {System.out.println(predefinedAccounts[i]);}
 
         do {
-            System.out.println("\n1. Add a new account \n2. Display all accounts" +
-                    "\n3. Search account by username  \n4. Deposit money" +
-                    "\n5. Withdraw money \n6. Show last transaction"  +
-                    " \n7. Undo last transaction \n8. Add bill" +
-                    "\n9. Process bill \n10. Display queue" +
-                    "\n11. Process request" +
-                    "\n12. Exit");
-            System.out.print("Enter your choice: ");
-            choice = sc.nextInt();
+            System.out.println("\nMain Menu");
+            System.out.println("1. Enter Bank");
+            System.out.println("2. Enter ATM");
+            System.out.println("3. Admin Area");
+            System.out.println("4. Exit");
+            System.out.print("Select area: ");
+            mainChoice = sc.nextInt();
             sc.nextLine();
 
-            switch (choice) {
+            switch (mainChoice) {
                 case 1:
-                    System.out.print("Enter account number: ");
-                    int accountNumber = sc.nextInt();
-                    sc.nextLine();
-                    System.out.print("Enter username: ");
-                    String username = sc.nextLine();
-                    System.out.print("Enter initial balance: ");
-                    double balance = sc.nextDouble();
-                    BankAccount newReq = new BankAccount(accountNumber, username, balance);
-                    if (reqRear == null) reqFront = reqRear = newReq;
-                    else {
-                        reqRear.next = newReq;
-                        reqRear = newReq;
-                    }
-                    System.out.println("Request sent to admin.");
+                    int bankChoice;
+                    do {
+                        System.out.println("\nBank Services");
+                        System.out.println("1. Submit Account Request\n2. Deposit Money\n3. Withdraw Money\n4. Back");
+                        System.out.print("Choice: ");
+                        bankChoice = sc.nextInt(); sc.nextLine();
+
+                        if (bankChoice == 1) {
+                            System.out.print("Enter ID: "); int id = sc.nextInt(); sc.nextLine();
+                            System.out.print("Enter Name: "); String name = sc.nextLine();
+                            System.out.print("Initial Balance: "); double bal = sc.nextDouble();
+                            BankAccount newReq = new BankAccount(id, name, bal);
+                            if (reqRear == null) { reqFront = reqRear = newReq; }
+                            else { reqRear.next = newReq; reqRear = newReq; }
+                            System.out.println("Request submitted. Wait for Admin approval.");
+                        }
+                        else if (bankChoice == 2 || bankChoice == 3) {
+                            System.out.print("Enter username: ");
+                            BankAccount acc = findAccount(head, sc.nextLine());
+                            if (acc != null) {
+                                System.out.print("Amount: "); double amt = sc.nextDouble();
+                                if (bankChoice == 2) {
+                                    acc.balance += amt;
+                                    if (top < 99) stackHistory[++top] = "Deposit " + amt + " to " + acc.username;
+                                    System.out.println("Success. New balance: " + acc.balance);
+                                } else {
+                                    if (amt <= acc.balance) {
+                                        acc.balance -= amt;
+                                        if (top < 99) stackHistory[++top] = "Withdraw " + amt + " from " + acc.username;
+                                        System.out.println("Success. New balance: " + acc.balance);
+                                    } else System.out.println("Withdraw failed.");
+                                }
+                            }
+                        }
+                    } while (bankChoice != 4);
                     break;
 
                 case 2:
-                    System.out.println("\nAccounts list: ");
-                    BankAccount temp = head;
-                    if (temp == null) System.out.println("Empty.");
-                    while (temp != null) {
-                        System.out.println(temp);
-                        temp = temp.next;
-                    }
+                    int atmChoice;
+                    do {
+                        System.out.println("\nATM Interface");
+                        System.out.println("1. Balance Enquiry\n2. Quick Withdraw\n3. Back");
+                        System.out.print("Choice: ");
+                        atmChoice = sc.nextInt(); sc.nextLine();
+
+                        if (atmChoice == 1 || atmChoice == 2) {
+                            System.out.print("Enter username: ");
+                            BankAccount acc = findAccount(head, sc.nextLine());
+                            if (acc != null) {
+                                if (atmChoice == 1) System.out.println("Current Balance: " + acc.balance);
+                                else {
+                                    System.out.print("Amount to withdraw: "); double amt = sc.nextDouble();
+                                    if (amt <= acc.balance) {
+                                        acc.balance -= amt;
+                                        if (top < 99) stackHistory[++top] = "ATM Withdraw " + amt + " - " + acc.username;
+                                        System.out.println("Please take your cash.");
+                                    } else System.out.println("Insufficient funds!");
+                                }
+                            }
+                        }
+                    } while (atmChoice != 3);
                     break;
 
                 case 3:
-                    System.out.print("Enter username: ");
-                    BankAccount foundAcc = findAccount(head, sc.nextLine());
-                    if (foundAcc != null) System.out.println(foundAcc);
-                    break;
+                    int adminChoice;
+                    do {
+                        System.out.println("\nAdmin Panel");
+                        System.out.println("1. Process Account Requests");
+                        System.out.println("2. View All Active Accounts");
+                        System.out.println("3. View Last Transaction");
+                        System.out.println("4. Undo Last Transaction");
+                        System.out.println("5. Back");
+                        System.out.print("Choice: ");
+                        adminChoice = sc.nextInt(); sc.nextLine();
 
-                case 4:
-                    System.out.print("Enter username: ");
-                    BankAccount depAcc = findAccount(head, sc.nextLine());
-                    if (depAcc != null) {
-                        System.out.print("Deposit: ");
-                        double deposit = sc.nextDouble();
-                        depAcc.balance += deposit;
-                        if (top < 99) history[++top] = "Deposit " + deposit + " to " + depAcc.username;
-                        System.out.println("New balance: " + depAcc.balance);
-                    }
-                    break;
-
-                case 5:
-                    System.out.print("Enter username: ");
-                    BankAccount wAcc = findAccount(head, sc.nextLine());
-                    if (wAcc != null) {
-                        System.out.print("Withdraw: ");
-                        double withdraw = sc.nextDouble();
-                        if (withdraw <= wAcc.balance) {
-                            wAcc.balance -= withdraw;
-                            if (top <99) history[++top] = "Withdraw " + withdraw + " from " + wAcc.username;
-                            System.out.println("New balance: " + wAcc.balance);
+                        if (adminChoice == 1) {
+                            if (reqFront != null) {
+                                BankAccount approved = reqFront;
+                                reqFront = reqFront.next;
+                                if (reqFront == null) reqRear = null;
+                                approved.next = head;
+                                head = approved;
+                                System.out.println("Approved and Activated: " + approved.username);
+                            } else System.out.println("No pending requests.");
                         }
-                        else System.out.println("Withdraw failed.");
-                    }
-                    break;
-
-                case 6:
-                    if (top >= 0) System.out.println(history[top]);
-                    else System.out.println("History is empty.");
-                    break;
-
-                case 7:
-                    if (top >= 0) System.out.println("Undo -> " + history[top--] + " removed.");
-                    else System.out.println("Nothing to undo.");
-                    break;
-
-                case 8:
-                    System.out.print("Enter bill name: ");
-                    String bName = sc.nextLine();
-                    BillNode newBill = new BillNode(bName);
-                    if (queueRear == null) {
-                        queueFront = queueRear = newBill;
-                    } else {
-                        queueRear.next = newBill;
-                        queueRear = newBill;
-                    }
-                    System.out.println("Added: " + bName);
-                    break;
-
-                case 9:
-                    if (queueFront != null) {
-                        System.out.println("Processing: " + queueFront.billName);
-                        queueFront = queueFront.next;
-                        if (queueFront == null) queueRear = null;
-
-                        if (top < 99) history[++top] = "Bill processed";
-                    }
-                    else System.out.println("Queue is empty.");
-                    break;
-
-                case 10:
-                    System.out.println("\nRemaining Bills:");
-                    BillNode tempB = queueFront;
-                    if (tempB == null) System.out.println("No pending bills.");
-                    while (tempB != null) {
-                        System.out.println("- " + tempB.billName);
-                        tempB = tempB.next;
-                    }
-                    break;
-
-                case 11:
-                    if (reqFront != null) {
-                        BankAccount approved = reqFront;
-                        reqFront = reqFront.next;
-                        if (reqFront == null) reqRear = null;
-
-                        approved.next = head;
-                        head = approved;
-                        System.out.println("Account approved: " + approved.username);
-                    } else System.out.println("No pending requests.");
+                        else if (adminChoice == 2) {
+                            BankAccount temp = head;
+                            if (temp == null) System.out.println("No accounts in system.");
+                            while (temp != null) { System.out.println(temp); temp = temp.next; }
+                        }
+                        else if (adminChoice == 3) {
+                            if (top >= 0) System.out.println("Last Action: " + stackHistory[top]);
+                            else System.out.println("No history.");
+                        }
+                        else if (adminChoice == 4) {
+                            if (top >= 0) System.out.println("Undo Done: " + stackHistory[top--] + " removed.");
+                            else System.out.println("Nothing to undo.");
+                        }
+                    } while (adminChoice != 5);
                     break;
             }
-        } while(choice != 12);
-
+        }
+        while(mainChoice != 4);
+        System.out.println("System closed. Goodbye!");
 
     }
 }
