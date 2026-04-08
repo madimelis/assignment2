@@ -41,6 +41,14 @@ public class BankAccount {
         BankAccount reqFront = null;
         BankAccount reqRear = null;
 
+        BankAccount[] predefinedAccounts = new BankAccount[3];
+        predefinedAccounts[0] = new BankAccount(1, "Ali", 150000.0);
+        predefinedAccounts[1] = new BankAccount(2, "Sara", 220000.0);
+        predefinedAccounts[2] = new BankAccount(3, "Alan", 50000.0);
+
+        System.out.println("Predefined Accounts");
+        for (int i = 0; i < predefinedAccounts.length; i++) {System.out.println(predefinedAccounts[i]);}
+
         do {
             System.out.println("\n1. Add a new account \n2. Display all accounts" +
                     "\n3. Search account by username  \n4. Deposit money" +
@@ -171,5 +179,7 @@ public class BankAccount {
                     break;
             }
         } while(choice != 12);
+
+
     }
 }
