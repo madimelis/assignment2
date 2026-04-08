@@ -6,6 +6,8 @@ public class BankAccount {
     double balance;
     BankAccount next;
 
+
+
     public BankAccount(int accountNumber, String username, double balance) {
         this.accountNumber = accountNumber;
         this.username = username;
@@ -34,12 +36,16 @@ public class BankAccount {
         int top = -1;
         Scanner sc = new Scanner(System.in);
         int choice;
+        BillNode queueFront = null;
+        BillNode queueRear = null;
 
         do {
-            System.out.println("\n1. Add a new account \n2. Display all accounts " +
-                    "\n3. Search account by username  \n4. Deposit money \n5. Withdraw money" +
-                    "\n6. Show last transaction \n7. Undo last transaction" +
-                    "\n8. Exit");
+            System.out.println("\n1. Add a new account \n2. Display all accounts" +
+                    "\n3. Search account by username  \n4. Deposit money" +
+                    "\n5. Withdraw money \n6. Show last transaction"  +
+                    " \n7. Undo last transaction \n8. Add bill" +
+                    "\n9. Process bill \n10. Display queue" +
+                    "\n11. Exit");
             System.out.print("Enter your choice: ");
             choice = sc.nextInt();
             sc.nextLine();
@@ -111,7 +117,41 @@ public class BankAccount {
                     if (top >= 0) System.out.println("Undo -> " + history[top--] + " removed.");
                     else System.out.println("Nothing to undo.");
                     break;
+
+                case 8:
+                    System.out.print("Enter bill name: ");
+                    String bName = sc.nextLine();
+                    BillNode newBill = new BillNode(bName);
+                    if (queueRear == null) {
+                        queueFront = queueRear = newBill;
+                    } else {
+                        queueRear.next = newBill;
+                        queueRear = newBill;
+                    }
+                    System.out.println("Added: " + bName);
+                    break;
+
+                case 9:
+                    if (queueFront != null) {
+                        System.out.println("Processing: " + queueFront.billName);
+                        queueFront = queueFront.next;
+                        if (queueFront == null) queueRear = null;
+
+                        if (top < 99) history[++top] = "Bill processed";
+                    }
+                    else System.out.println("Queue is empty.");
+                    break;
+
+                case 10:
+                    System.out.println("\nRemaining Bills:");
+                    BillNode tempB = queueFront;
+                    if (tempB == null) System.out.println("No pending bills.");
+                    while (tempB != null) {
+                        System.out.println("- " + tempB.billName);
+                        tempB = tempB.next;
+                    }
+                    break;
             }
-        } while(choice != 8);
+        } while(choice != 11);
     }
 }
